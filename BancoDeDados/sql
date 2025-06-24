@@ -194,3 +194,7 @@ MODIFY COLUMN tempo_preparo varchar(10);
 ALTER TABLE foto_receita
 MODIFY tipo LONGBLOB NOT NULL;
 
+
+-- MUDANÇA DA COLUNA
+ALTER TABLE foto_receita CHANGE tipo foto LONGBLOB NOT NULL;
+ALTER TABLE foto_receita ADD COLUMN tipo VARCHAR(50) NOT NULL DEFAULT 'image/jpeg' AFTER foto;
