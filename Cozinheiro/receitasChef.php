@@ -82,7 +82,7 @@ $receitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-        <a href="../LoginSenha/logout.php" class="logout-button">
+    <a href="../LoginSenha/logout.php" class="logout-button">
         <i class="fa-solid fa-right-from-bracket fa-lg gray-icon"></i>
     </a>
     <div class="container">
@@ -226,15 +226,17 @@ $receitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= nl2br(htmlspecialchars($r['descricao'] ?? '')) ?></td>
                             <td>
                                 <?php
-                                $stmtFoto = $conn->prepare("SELECT tipo FROM foto_receita WHERE nome_receita = ? LIMIT 1");
+                                $stmtFoto = $conn->prepare("SELECT foto, tipo FROM foto_receita WHERE nome_receita = ? LIMIT 1");
                                 $stmtFoto->execute([$r['nome_receita']]);
                                 $foto = $stmtFoto->fetch(PDO::FETCH_ASSOC);
-                                if ($foto && $foto['tipo']): ?>
-                                    <img src="data:image/jpeg;base64,<?= base64_encode($foto['tipo']) ?>" alt="Foto da Receita" class="foto-receita" />
+                                if ($foto && $foto['foto']): ?>
+                                    <img src="data:<?= htmlspecialchars($foto['tipo']) ?>;base64,<?= base64_encode($foto['foto']) ?>"
+                                        alt="Foto da Receita" class="foto-receita" />
                                 <?php else: ?>
                                     Sem foto
                                 <?php endif; ?>
                             </td>
+
                             <td>
                                 <div class="action-buttons">
 
