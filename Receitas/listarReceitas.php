@@ -8,7 +8,7 @@ if ($conn->connect_error) {
 // Consulta para obter receitas com autor, categoria e imagem (se houver)
 $sql = "
     SELECT r.nome_receita, f.nome AS autor, c.nome_categoria,
-           fr.tipo AS imagem_blob
+           fr.foto AS imagem_blob, fr.tipo AS mime_type
     FROM receitas r
     JOIN funcionarios f ON r.id_funcionario = f.id_funcionario
     JOIN categorias c ON r.id_categoria = c.id_categoria
@@ -26,12 +26,13 @@ $result = $stmt->get_result();
 $receitas = [];
 
 while ($row = $result->fetch_assoc()) {
-   if (!empty($row['imagem_blob'])) {
-    // Usa 'image/jpeg' como tipo padrão, se você não armazena o tipo real
-    $row['foto_base64'] = 'data:image/jpeg;base64,' . base64_encode($row['imagem_blob']);
-} else {
-    $row['foto_base64'] = null;
-}
+    if (!empty($row['imagem_blob'])) {
+        // Usa o tipo MIME salvo na coluna `tipo`
+        $mimeType = htmlspecialchars($row['mime_type'] ?? 'image/jpeg');
+        $row['foto_base64'] = 'data:' . $mimeType . ';base64,' . base64_encode($row['imagem_blob']);
+    } else {
+        $row['foto_base64'] = null;
+    }
 
     $receitas[] = $row;
 }

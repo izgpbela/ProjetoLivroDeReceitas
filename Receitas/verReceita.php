@@ -38,19 +38,21 @@ $stmt->close();
 
 // Check for photo - MODIFICADO PARA BUSCAR O BLOB DIRETAMENTE
 $foto_data = null;
-$foto_type = null;
-$foto_stmt = $conexao->prepare("SELECT tipo FROM foto_receita WHERE nome_receita = ? LIMIT 1");
+$foto_type = 'image/jpeg'; // valor padrão
+$foto_stmt = $conexao->prepare("SELECT foto, tipo FROM foto_receita WHERE nome_receita = ? LIMIT 1");
 if ($foto_stmt) {
     $foto_stmt->bind_param("s", $nome_receita);
     if ($foto_stmt->execute()) {
         $foto_result = $foto_stmt->get_result();
         if ($foto_result->num_rows > 0) {
             $foto = $foto_result->fetch_assoc();
-            $foto_data = $foto['tipo'];
+            $foto_data = $foto['foto'];
+            $foto_type = $foto['tipo'];
         }
     }
     $foto_stmt->close();
 }
+
 
 // Buscar ingredientes detalhados
 $ingredientes_detalhados = [];
@@ -127,7 +129,7 @@ $tem_foto = !is_null($foto_data);
 
     <section class="recipe-hero">
         <?php if ($tem_foto): ?>
-            <img src="data:image/jpeg;base64,<?= base64_encode($foto_data) ?>" 
+<img src="data:<?= htmlspecialchars($foto_type) ?>;base64,<?= base64_encode($foto_data) ?>"
                  alt="Foto da Receita <?= htmlspecialchars($nome_receita) ?>" >
         <?php else: ?>
             <p>Foto não disponível.</p>
